@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup
 import json
 import hashlib
 from pyppeteer import launch
-from insta import login, upload
+from insta import  login,upload
 import os
 
 async def fetch_articles():
@@ -101,6 +101,15 @@ async def download_image(session, url, id, folder='images'):
                         break
                     f.write(chunk)
     return filepath
+async def process_new_articles(new_articles):
+    print("Processing new articles")
+    async with aiohttp.ClientSession() as session:
+        new_articles.reverse()
+        for article in new_articles:
+            local_image_path = await download_image(session, article['img_link'], article['id'])
+            await upload(local_image_path, article['title'], article['article_link'])
+            os.remove(local_image_path)
+
 
 async def check_for_new_articles():
     current_articles = await fetch_articles()
@@ -111,35 +120,22 @@ async def check_for_new_articles():
         article for article in current_articles 
         if article['id'] not in saved_article_ids and "[오리지널]" in article['title']
     ]
-    idx=1
+
     if new_articles:
-        print("New article!!!")
-        async with aiohttp.ClientSession() as session:
-            # new articles 역순으로 처리
-            new_articles.reverse()
-            for article in new_articles:
-                print(f"{idx}번째 게시물")
-                print(article['title'])
-                local_image_path = await download_image(session, article['img_link'], article['id'])
-                await upload(local_image_path, article['title'], article['article_link'])
-                
-                # 이미지 삭제
-                os.remove(local_image_path)
-                idx+=1
-        
+        await login()
+        await process_new_articles(new_articles)
         await save_articles(current_articles)
 
 
     return new_articles
 
 async def main():
-    await login()
-    while True:
-        new_articles = await check_for_new_articles()
-        for article in new_articles:
-            print(article['title'])
-            print(article['img_link'])
-        await asyncio.sleep(3600)  # Check every hour
+   
+    new_articles = await check_for_new_articles()
+    for article in new_articles:
+        print(article['title'])
+    
+    
 
 if __name__ == "__main__":
     asyncio.get_event_loop().run_until_complete(main())
