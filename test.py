@@ -19,7 +19,7 @@ def add_text_box(input_path):
     font_path = "NanumGothic.ttf"  # 사용할 폰트 파일 경로
     font_size = 40
     font = ImageFont.truetype(font_path, font_size)
-    text_color = (0, 0, 255)  # 파랑색 (RGB 형식)
+    text_color = (22, 22, 22)  # 파랑색 (RGB 형식)
     
     # PIL 이미지를 사용하여 텍스트 추가
     pil_img = Image.fromarray(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
@@ -64,3 +64,4 @@ def add_text_box(input_path):
 
 # 함수 사용 예
 # asyncio.run(async_add_text_box('input_image.jpg'))
+add_text_box('1.jpg')
