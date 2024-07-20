@@ -64,4 +64,3 @@ def add_text_box(input_path):
 
 # 함수 사용 예
 # asyncio.run(async_add_text_box('input_image.jpg'))
-add_text_box('1.jpg')
