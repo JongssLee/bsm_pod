@@ -1,18 +1,22 @@
+# insta.py
 from instagrapi import Client
-# import .env file
 from dotenv import load_dotenv
 import os
-from instagrapi.types import StoryMention, StoryMedia, StoryLink, StoryHashtag, StorySticker, StoryStickerLink
+from instagrapi.types import StoryLink
+import asyncio
 
-# Load .env file
-load_dotenv()
-id = os.getenv("ID")
-secret = os.getenv("PW")
-print(id, secret)
-# Create a client instance
 client = Client()
-client.login(id, secret)
-# sticker = client.sticker_tray()
-# print(sticker)
-# client.photo_upload("0.jpg", "test")
-client.photo_upload_to_story(path="images/1.jpg", stickers=[StorySticker(x=50, y=50, width=100, height=100, type="story_link", story_link=StoryStickerLink(url="https://www.google.com"))])
+
+async def login():
+    load_dotenv()
+    id = os.getenv("ID")
+    secret = os.getenv("PW")
+
+    await asyncio.to_thread(client.login, id, secret)
+    print("Logged in")
+
+async def upload(img_link, caption, article_link):
+    await asyncio.to_thread(client.photo_upload, img_link, caption)
+    print("Feed Uploaded")
+    await asyncio.to_thread(client.photo_upload_to_story, path=img_link, links=[StoryLink(webUri=article_link)])
+    print("Story Uploaded")
