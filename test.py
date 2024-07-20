@@ -57,11 +57,10 @@ def add_text_box(input_path):
     img_with_text = cv2.cvtColor(np.array(pil_img), cv2.COLOR_RGB2BGR)
     
     # 결과 이미지 저장
-    output_path = input_path.replace('.png', '_output.png')
+    output_path = input_path.replace('.jpg', '_output.jpg')
     cv2.imwrite(output_path, img_with_text)
     print(f"Saved to {output_path}")
     return output_path
 
 # 함수 사용 예
 # asyncio.run(async_add_text_box('input_image.jpg'))
-add_text_box('1.jpg')
