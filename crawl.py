@@ -35,8 +35,8 @@ async def fetch_articles():
             if article_url:
                 article_list.append({'id': unique_id, 'title': title, 'img_link': img_link, 'article_link': article_url})
             
-            if idx >= 5:  # 처음 5개 항목만 처리 (테스트용)
-                break
+            # if idx >= 5:  # 처음 5개 항목만 처리 (테스트용)
+            #     break
 
         return article_list
     except Exception as e:
@@ -107,17 +107,25 @@ async def check_for_new_articles():
     saved_articles = await load_articles()
 
     saved_article_ids = {article['id'] for article in saved_articles}
-    new_articles = [article for article in current_articles if article['id'] not in saved_article_ids]
-
+    new_articles = [
+        article for article in current_articles 
+        if article['id'] not in saved_article_ids and "[오리지널]" in article['title']
+    ]
+    idx=1
     if new_articles:
         print("New article!!!")
         async with aiohttp.ClientSession() as session:
+            # new articles 역순으로 처리
+            new_articles.reverse()
             for article in new_articles:
+                print(f"{idx}번째 게시물")
+                print(article['title'])
                 local_image_path = await download_image(session, article['img_link'], article['id'])
                 await upload(local_image_path, article['title'], article['article_link'])
                 
                 # 이미지 삭제
                 os.remove(local_image_path)
+                idx+=1
         
         await save_articles(current_articles)
 
