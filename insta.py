@@ -19,6 +19,7 @@ async def upload(img_link, caption, article_link):
     await asyncio.to_thread(client.photo_upload, img_link, caption)
     print("Feed Uploaded")
     story_img = await async_add_text_box(img_link)
+    
     await asyncio.to_thread(client.photo_upload_to_story, path=story_img, links=[StoryLink(webUri=article_link)])
     os.remove(story_img)
     print("Story Uploaded")

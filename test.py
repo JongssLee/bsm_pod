@@ -3,7 +3,7 @@ import numpy as np
 import asyncio
 
 async def async_add_text_box(input_path):
-    await asyncio.to_thread(add_text_box, input_path)
+    return await asyncio.to_thread(add_text_box, input_path)
 
 
 def add_text_box(input_path):
@@ -19,7 +19,7 @@ def add_text_box(input_path):
     font = cv2.FONT_HERSHEY_SIMPLEX
     font_scale = 1
     font_thickness = 2
-    text_color = (0, 255, 0)  # 형광초록 (BGR 형식)
+    text_color = (255, 0, 0)  # 형광초록 (BGR 형식)
     
     # 텍스트 크기 계산
     text_size = cv2.getTextSize(text, font, font_scale, font_thickness)[0]
@@ -36,8 +36,8 @@ def add_text_box(input_path):
     # 둥근 모서리의 사각형 그리기
     overlay = img.copy()
     sub_img = overlay[box_y:box_y+box_height, box_x:box_x+box_width]
-    white_rect = np.ones(sub_img.shape, dtype=np.uint8) * 255
-    res = cv2.addWeighted(sub_img, 0.5, white_rect, 0.5, 1.0)
+    white_rect = np.ones(sub_img.shape, dtype=np.uint8) * 255  # Use white for the background
+    res = cv2.addWeighted(sub_img, 0.3, white_rect, 0.7, 1.0)
     
     # 둥근 모서리 마스크 생성
     mask = np.zeros(sub_img.shape[:2], np.uint8)
@@ -57,6 +57,8 @@ def add_text_box(input_path):
     output_path = input_path.replace('.jpg', '_output.jpg')
     # 결과 이미지 저장
     cv2.imwrite(output_path, img)
+    print(f"Saved to {output_path}")
     return output_path
 
 # 함수 사용 예
+add_text_box('images/0.jpg')
