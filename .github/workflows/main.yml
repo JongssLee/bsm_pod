@@ -8,26 +8,30 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write  # 저장소에 쓰기 권한 부여
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
-        python-version: '3.9'
-    - name: Debug
-      run: |
-        pwd
-        ls -la
+        python-version: '3.x'
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install -r ${{ github.workspace }}/requirements.txt
+        pip install -r requirements.txt
     - name: Run script
       env:
         ID: ${{ secrets.INSTAGRAM_ID }}
         PW: ${{ secrets.INSTAGRAM_PW }}
       run: |
         python crawl.py
+    - name: Commit and push if changed
+      run: |
+        git config --global user.email "action@github.com"
+        git config --global user.name "GitHub Action"
+        git add articles.json
+        git diff --quiet && git diff --staged --quiet || (git commit -m "Update articles.json" && git push)
     - name: Send email
       uses: dawidd6/action-send-mail@v2
       with:
