@@ -11,7 +11,8 @@ async def login():
     load_dotenv()
     id = os.getenv("ID")
     secret = os.getenv("PW")
-
+    print("Logging in")
+    print(id, secret)
     await asyncio.to_thread(client.login, id, secret)
     print("Logged in")
 
